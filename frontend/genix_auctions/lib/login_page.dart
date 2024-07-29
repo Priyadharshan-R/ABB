@@ -4,6 +4,7 @@ import 'package:genix_auctions/bloc/user_session_bloc.dart';
 import 'package:genix_auctions/bloc/user_session_event.dart';
 import 'package:genix_auctions/core/theme/app_pallete.dart';
 import 'package:genix_auctions/core/widgets/nav_bar.dart';
+import 'package:genix_auctions/core/widgets/snack_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http; // Import http package
 import 'dart:convert';
@@ -64,21 +65,54 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
-        // Handle successful login, e.g., store token, navigate to another page
+        final token = responseBody['token'];
+        final username = responseBody['username'];
 
-        print('Login successful: ${responseBody['token']}');
+        // Store the token
         final spref = await SharedPreferences.getInstance();
-        spref.setString('user_id', email);
-        // spref.setBool('isLoggedIn', true);
-        // spref.setString('token', responseBody['token']);
-        BlocProvider.of<UserSessionBloc>(context).add(LoggedIn());
+        await spref.setString('token', token);
+        await spref.setBool('isLoggedIn', true);
+        await spref.setString('user_id', email);
+        await spref.setString('username', username);
+
         context.go('/home');
       } else {
         // Handle error response
-        print('Login failed: ${response.body}');
+        showSnackBar(context, 'Login failed: ${response.body}');
+        // print('Login failed: ${response.body}');
       }
     }
   }
+
+  // Future<void> _login() async {
+  //   if (_formKey.currentState!.validate()) {
+  //     final email = _emailController.text;
+  //     final password = _passwordController.text;
+
+  //     final response = await http.post(
+  //       Uri.parse(
+  //           'http://localhost:5000/api/auth/login'), // Replace with your Node.js endpoint
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: json.encode({'email': email, 'password': password}),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final responseBody = json.decode(response.body);
+  //       // Handle successful login, e.g., store token, navigate to another page
+
+  //       print('Login successful: ${responseBody['token']}');
+  //       final spref = await SharedPreferences.getInstance();
+  //       spref.setString('user_id', email);
+  //       // spref.setBool('isLoggedIn', true);
+  //       // spref.setString('token', responseBody['token']);
+  //       BlocProvider.of<UserSessionBloc>(context).add(LoggedIn());
+  //       context.go('/home');
+  //     } else {
+  //       // Handle error response
+  //       print('Login failed: ${response.body}');
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -100,38 +134,38 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 30),
-                          Text(
+                          const SizedBox(height: 30),
+                          const Text(
                             'Login',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 10),
-                          Text(
+                          const SizedBox(height: 10),
+                          const Text(
                             'Welcome back. Enter your credentials to access your account',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey,
                             ),
                           ),
-                          SizedBox(height: 30),
+                          const SizedBox(height: 30),
                           TextFormField(
                             controller: _emailController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Email Address',
                               border: OutlineInputBorder(),
                             ),
                             validator: _validateEmail,
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           TextFormField(
                             controller: _passwordController,
                             obscureText: !_passwordVisible,
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _passwordVisible
@@ -147,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             validator: _validatePassword,
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -161,55 +195,54 @@ class _LoginPageState extends State<LoginPage> {
                                       });
                                     },
                                   ),
-                                  Text('Keep me signed in'),
+                                  const Text('Keep me signed in'),
                                 ],
                               ),
                               TextButton(
                                 onPressed: () {},
-                                child: Text('Forgot Password'),
+                                child: const Text('Forgot Password'),
                               ),
                             ],
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: _login, // Call the login method
                             style: ElevatedButton.styleFrom(
-                              minimumSize: Size(double.infinity, 50),
+                              minimumSize: const Size(double.infinity, 50),
                             ),
-                            child: Text('Continue'),
+                            child: const Text('Continue'),
                           ),
-                          SizedBox(height: 20),
-                          Row(
+                          const SizedBox(height: 20),
+                          const Row(
                             children: [
                               Expanded(child: Divider()),
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
                                 child: Text('or sign up with'),
                               ),
                               Expanded(child: Divider()),
                             ],
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               OutlinedButton(
                                 onPressed: () {},
-                                child: Text('Google'),
+                                child: const Text('Google'),
                               ),
                               OutlinedButton(
                                 onPressed: () {},
-                                child: Text('Apple'),
+                                child: const Text('Apple'),
                               ),
                               OutlinedButton(
                                 onPressed: () {},
-                                child: Text('Facebook'),
+                                child: const Text('Facebook'),
                               ),
                             ],
                           ),
-                          SizedBox(height: 20),
-                          Center(
+                          const SizedBox(height: 20),
+                          const Center(
                             child: Text.rich(
                               TextSpan(
                                 text: "Don't have an Account? ",

@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
-import "package:genix_auctions/c_prodcut.dart";
+import "package:genix_auctions/product_page.dart";
 import "package:genix_auctions/home_page.dart";
 import "package:genix_auctions/login_page.dart";
-import "package:genix_auctions/product_page.dart";
 import "package:genix_auctions/signup_page.dart";
+import "package:genix_auctions/successful_page.dart";
 import "package:go_router/go_router.dart";
 
 List<RouteBase> routesList = [
@@ -41,6 +41,12 @@ List<RouteBase> routesList = [
     path: "/signup",
     builder: (context, state) {
       return SignUpPage();
+    },
+  ),
+  GoRoute(
+    path: "/success",
+    builder: (context, state) {
+      return const SuccessfulPage();
     },
   ),
   GoRoute(

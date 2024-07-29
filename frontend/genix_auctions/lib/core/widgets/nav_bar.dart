@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:genix_auctions/bloc/user_session_bloc.dart';
-import 'package:genix_auctions/bloc/user_session_state.dart';
 import 'package:genix_auctions/core/theme/app_pallete.dart';
 import 'package:genix_auctions/core/widgets/avatar.dart';
 import 'package:genix_auctions/core/widgets/gradient_button.dart';
 import 'package:genix_auctions/core/widgets/logo.dart';
-import 'package:genix_auctions/core/widgets/nav_button.dart';
-import 'package:genix_auctions/core/widgets/nav_items.dart';
 import 'package:genix_auctions/core/widgets/product_list_page.dart';
-import 'package:genix_auctions/core/widgets/vishnu.dart';
 import 'package:genix_auctions/create_product_dialog.dart';
+import 'package:genix_auctions/service/log.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NavBar extends StatefulWidget {
   final bool isWhite;
-  const NavBar({super.key, this.isWhite = false});
+  const NavBar({Key? key, this.isWhite = false}) : super(key: key);
 
   @override
   State<NavBar> createState() => _NavBarState();
@@ -24,18 +19,21 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   bool isLogged = false;
-
-  getLog() async {
-    final preff = await SharedPreferences.getInstance();
-    setState(() {
-      isLogged = preff.getBool('isLoggedIn') ?? false;
-    });
-  }
+  String? email;
 
   @override
   void initState() {
     super.initState();
-    getLog();
+    _getLog();
+  }
+
+  Future<void> _getLog() async {
+    final pref = await SharedPreferences.getInstance();
+    LogData().getLogData;
+    setState(() {
+      isLogged = pref.getBool('isLoggedIn') ?? false;
+      email = pref.getString('user_id');
+    });
   }
 
   void _showCreateProductDialog(BuildContext context, String ownerId) {
@@ -73,97 +71,48 @@ class _NavBarState extends State<NavBar> {
             Wrap(
               spacing: 16,
               children: [
-                TextButton(
-                    onPressed: () async {
-                      final pref = await SharedPreferences.getInstance();
-                      String email = pref.getString('user_id')!;
+                if (isLogged) ...[
+                  TextButton(
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ProductListPage(ownerId: email),
+                          builder: (context) =>
+                              ProductListPage(ownerId: email!),
                         ),
                       );
                     },
-                    child: Text('update')),
-                TextButton(
-                    onPressed: () async {
-                      final pref = await SharedPreferences.getInstance();
-                      String email = pref.getString('user_id')!;
-                      _showCreateProductDialog(context, email);
+                    child: Text('Update'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      _showCreateProductDialog(context, email!);
                     },
-                    child: Text('create')),
-                NavigationButton(
-                  text: 'Auctions',
-                  subItems: ['Add Auction item', 'summa'],
-                ),
-                const NavItems(
-                  text: 'Auctions',
-                  icon: Icons.keyboard_arrow_down_rounded,
-                  options: ['Add Item for Auction'],
-                ),
-                const NavItems(
-                    text: 'Bidding',
-                    icon: Icons.keyboard_arrow_down_rounded,
-                    options: []),
-                const NavItems(
-                    text: 'About us',
-                    icon: Icons.keyboard_arrow_down_rounded,
-                    options: []),
-                const NavItems(
-                    text: 'English',
-                    leadingIcon: Icons.translate_rounded,
-                    icon: Icons.arrow_drop_down_sharp,
-                    options: []),
-                isLogged
-                    ? const Avatar(imageUrl: '')
-                    : Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: InkWell(
-                              onTap: () => context.go("/login"),
-                              child: const Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-                          ),
-                          GradientButton(
-                            text: 'Get Started',
-                            ontap: () {},
-                          ),
-                        ],
-                      )
-                // BlocBuilder<UserSessionBloc, UserSessionState>(
-                //   builder: (context, state) {
-                //     if (isLogged!) {
-                //       return const Avatar(imageUrl: '');
-                //     } else {
-                // return Row(
-                //   children: [
-                //     Padding(
-                //       padding: const EdgeInsets.all(8.0),
-                //       child: InkWell(
-                //         onTap: () => context.go("/login"),
-                //         child: const Text(
-                //           'Login',
-                //           style: TextStyle(
-                //             color: Colors.blue,
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //     GradientButton(
-                //       text: 'Get Started',
-                //       ontap: () {},
-                //     ),
-                //   ],
-                // );
-                //     }
-                //   },
-                // )
+                    child: Text('Create'),
+                  ),
+                  const Avatar(
+                    imageUrl: '',
+                  ),
+                ] else ...[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InkWell(
+                      onTap: () => context.go("/login"),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ),
+                  GradientButton(
+                    text: 'Get Started',
+                    ontap: () {
+                      context.go('/signup');
+                    },
+                  ),
+                ],
               ],
             ),
             const Spacer(flex: 1),
@@ -172,20 +121,4 @@ class _NavBarState extends State<NavBar> {
       ),
     );
   }
-
-  // void _showCreateProductDialog(BuildContext context, String ownerId) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return CreateProductDialog(
-  //         ownerId: ownerId,
-  //         onSave: (product) {
-  //           // Handle the saved product
-  //           print('Product saved: $product');
-  //           // You can call your API or update state here
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
 }

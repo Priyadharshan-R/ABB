@@ -1,6 +1,7 @@
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const config = require('../config')
+const { broadcast } = require('../utils/broadcast')
 
 const register = async (req, res) => {
   const { username, email, password } = req.body
@@ -27,12 +28,12 @@ const login = async (req, res) => {
     if (!user || !(await user.matchPassword(password))) {
       return res.status(400).json({ message: 'Invalid email or password' })
     }
-
+    const username = user.username
     const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
       expiresIn: '1h',
     })
 
-    res.json({ token })
+    res.json({ token, username })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }

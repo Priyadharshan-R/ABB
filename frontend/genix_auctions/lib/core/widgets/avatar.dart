@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:genix_auctions/profile_page.dart';
+import 'package:genix_auctions/service/logout.dart';
 
 class Avatar extends StatelessWidget {
   final String imageUrl;
   final double radius;
-  final VoidCallback? onTap;
 
   const Avatar({
     super.key,
     required this.imageUrl,
     this.radius = 15.0,
-    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
+    return InkWell(
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ProfilePage()));
+      },
       child: CircleAvatar(
         radius: radius,
         // backgroundImage: NetworkImage(imageUrl),

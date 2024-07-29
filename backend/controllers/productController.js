@@ -6,7 +6,7 @@ const createProduct = async (req, res) => {
     req.body
 
   try {
-    const product = new Product({
+    const product = await Product.insertMany({
       owner: id,
       title,
       description,
@@ -14,9 +14,11 @@ const createProduct = async (req, res) => {
       minimumBidPrice,
       currentBidPrice: minimumBidPrice, // Set initial current bid price to minimum bid price
       bidEndingTime,
+      reviews: [],
     })
+    // product[''] = [];
 
-    await product.save()
+    // await product.save()
 
     res.status(201).json({ product })
   } catch (err) {
@@ -38,9 +40,9 @@ const updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(id)
 
-    if (product.owner.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'Not authorized' })
-    }
+    // if (product.owner.toString() !== usermail) {
+    //   return res.status(401).json({ message: 'Not authorized' })
+    // }
 
     if (!product) {
       res.status(400).json({ message: 'product not found' })
@@ -60,17 +62,57 @@ const updateProduct = async (req, res) => {
   }
 }
 
+const winner = async (req, res) => {
+  const { email, username, productId } = req.body
+
+  try {
+    const product = await Product.findById(productId)
+
+    if (!product) {
+      res.status(400).json({ message: 'product not found' })
+    }
+
+    product.winner = username
+
+    await product.save()
+    res.json(product)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+}
+const addReview = async (req, res) => {
+  const { username, review, productId } = req.body
+  try {
+    const product = await Product.findById(productId)
+
+    const RView = {
+      name: username,
+      reiew: review,
+      rating: 4,
+    }
+
+    product.reviews.push(RView)
+
+    await product.save({ _id: productId })
+    res.json({ message: 'Product review update' })
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+}
+
 const deleteProduct = async (req, res) => {
   const { id } = req.params
+  const k = req.header('email')
+  // const { email } = req.body
 
   try {
     const product = await Product.findById(id)
 
-    if (product.owner.toString() !== req.user.id) {
-      return res.status(401).json({ message: 'Not authorized' })
+    if (product.owner.toString() !== k) {
+      return res.status(401).json({ message: `Not authorized ${k}` })
     }
 
-    await product.remove()
+    await product.deleteOne({ _id: id })
     res.json({ message: 'Product removed' })
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -135,4 +177,6 @@ module.exports = {
   getProducts,
   getProduct,
   getProductByOwner,
+  winner,
+  addReview,
 }

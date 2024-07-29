@@ -12,6 +12,15 @@ const addBid = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' })
     }
 
+    if (product.bids.length > 0) {
+      const lastBid = product.bids[product.bids.length - 1]
+      if (lastBid.username === username) {
+        return res
+          .status(402)
+          .json({ message: 'You cannot place consecutive bids' })
+      }
+    }
+
     if (price <= product.currentBidPrice) {
       return res
         .status(400)
@@ -30,11 +39,7 @@ const addBid = async (req, res) => {
     await product.save()
 
     // Notify all connected clients about the new bid
-    // wss.clients.forEach((client) => {
-    //   if (client.readyState === WebSocket.OPEN) {
-    //     client.send(JSON.stringify(newBid))
-    //   }
-    // })
+    // newBid(newBid)
 
     res.status(200).json(product)
   } catch (err) {
@@ -86,7 +91,7 @@ const getBids = async (req, res) => {
 //       if (previousBid.amount === highestBid) {
 //         sendNotification(
 //           previousBid.user,
-//           `You have been outbid on ${product.title}`
+//           You have been outbid on ${product.title}
 //         )
 //       }
 //     }

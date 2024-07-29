@@ -24,7 +24,6 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
   final _descriptionController = TextEditingController();
   final _imageController = TextEditingController();
   final _minBidPriceController = TextEditingController();
-  final _currentBidPriceController = TextEditingController();
   final _bidEndingTimeController = TextEditingController();
   late String email;
 
@@ -36,7 +35,6 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
     _descriptionController.dispose();
     _imageController.dispose();
     _minBidPriceController.dispose();
-    _currentBidPriceController.dispose();
     _bidEndingTimeController.dispose();
     super.dispose();
   }
@@ -49,7 +47,6 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
         'description': _descriptionController.text,
         'imageUrl': _imageController.text,
         'minimumBidPrice': double.parse(_minBidPriceController.text),
-        'currentBidPrice': double.parse(_currentBidPriceController.text),
         'bidEndingTime': _selectedDateTime?.toIso8601String(),
         'id': email,
       };
@@ -63,6 +60,7 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         widget.onSave(product);
+        // Navigator.of(context).pop();
       } else {
         _showErrorDialog('Failed to create product: ${response.body}');
       }
@@ -129,7 +127,9 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Create New Product'),
-      content: SingleChildScrollView(
+      content: Container(
+        height: 400,
+        width: 600,
         child: Form(
           key: _formKey,
           child: Column(
@@ -137,7 +137,14 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the title';
@@ -145,9 +152,17 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
                   return null;
                 },
               ),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the description';
@@ -155,9 +170,17 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
                   return null;
                 },
               ),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _imageController,
-                decoration: InputDecoration(labelText: 'Image URL'),
+                decoration: InputDecoration(
+                  labelText: 'Image URL',
+                  border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the image URL';
@@ -165,9 +188,17 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
                   return null;
                 },
               ),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _minBidPriceController,
-                decoration: InputDecoration(labelText: 'Minimum Bid Price'),
+                decoration: InputDecoration(
+                  labelText: 'Minimum Bid Price',
+                  border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
+                ),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -179,25 +210,17 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
                   return null;
                 },
               ),
-              TextFormField(
-                controller: _currentBidPriceController,
-                decoration: InputDecoration(labelText: 'Current Bid Price'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the current bid price';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter a valid number';
-                  }
-                  return null;
-                },
-              ),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _bidEndingTimeController,
                 readOnly: true,
                 decoration: InputDecoration(
                   labelText: 'Bid Ending Time',
+                  border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
                   suffixIcon: IconButton(
                     icon: Icon(Icons.calendar_today),
                     onPressed: () {
@@ -223,8 +246,13 @@ class _CreateProductDialogState extends State<CreateProductDialog> {
           },
           child: Text('Cancel'),
         ),
-        ElevatedButton(
+        TextButton(
           onPressed: _submit,
+          style: TextButton.styleFrom(
+            backgroundColor: Colors.lightBlue,
+            foregroundColor: Colors.black,
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
           child: Text('Save'),
         ),
       ],

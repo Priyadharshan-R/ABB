@@ -6,7 +6,7 @@ class AuctionModel {
   final int minimumBidPrice;
   final int currentBidPrice;
   final String endDate;
-  final List<String> reviews;
+  final List<Map<String, dynamic>> reviews;
 
   AuctionModel({
     required this.id,
@@ -18,4 +18,17 @@ class AuctionModel {
     required this.imageUrl,
     required this.reviews,
   });
+
+  factory AuctionModel.fromJson(Map<String, dynamic> json) {
+    return AuctionModel(
+      id: json['_id'],
+      title: json['title'],
+      description: json['description'],
+      minimumBidPrice: json['minimumBidPrice'].toDouble(),
+      currentBidPrice: json['currentBidPrice'].toDouble(),
+      imageUrl: json['imageUrl'],
+      reviews: List<Map<String, dynamic>>.from(json['reviews'] ?? []),
+      endDate: json['bidEndingTime'],
+    );
+  }
 }

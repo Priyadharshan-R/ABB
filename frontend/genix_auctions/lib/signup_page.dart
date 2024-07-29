@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:genix_auctions/core/theme/app_pallete.dart';
 import 'package:genix_auctions/core/widgets/nav_bar.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -49,18 +50,20 @@ class _SignUpPageState extends State<SignUpPage> {
         'Content-Type': 'application/json',
       },
       body: json.encode({
-        '': _firstNameController.text + ' ' + _lastNameController.text,
+        'username': _firstNameController.text + ' ' + _lastNameController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
       }),
     );
 
     if (response.statusCode == 201) {
+      context.go('/success');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign up successful!')),
+        const SnackBar(content: Text('Sign up successful!')),
       );
     } else {
       final errorMessage = json.decode(response.body)['message'];
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Sign up failed: $errorMessage')),
       );
@@ -97,20 +100,20 @@ class _SignUpPageState extends State<SignUpPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'Sign up',
                             style: TextStyle(
                                 fontSize: 32, fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(height: 8),
-                          Text(
+                          const SizedBox(height: 8),
+                          const Text(
                             'New bidders, as soon as you have submitted your information you will be eligible to bid in the auction.',
                             style: TextStyle(fontSize: 16, color: Colors.grey),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           TextFormField(
                             controller: _firstNameController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'First Name',
                               border: OutlineInputBorder(),
                             ),
@@ -121,10 +124,10 @@ class _SignUpPageState extends State<SignUpPage> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           TextFormField(
                             controller: _lastNameController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Last Name',
                               border: OutlineInputBorder(),
                             ),
@@ -135,22 +138,22 @@ class _SignUpPageState extends State<SignUpPage> {
                               return null;
                             },
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           TextFormField(
                             controller: _emailController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Email Address',
                               border: OutlineInputBorder(),
                             ),
                             validator: _validateEmail,
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           TextFormField(
                             controller: _passwordController,
                             obscureText: !_passwordVisible,
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                               errorText: _passwordController.text.length < 8
                                   ? 'Password criteria check'
                                   : null,
@@ -169,7 +172,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             validator: _validatePassword,
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Row(
                             children: [
                               Checkbox(
@@ -180,10 +183,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                   });
                                 },
                               ),
-                              Text('Receive outbid emails'),
+                              const Text('Receive outbid emails'),
                             ],
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
@@ -191,12 +194,12 @@ class _SignUpPageState extends State<SignUpPage> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              minimumSize: Size(double.infinity, 50),
+                              minimumSize: const Size(double.infinity, 50),
                             ),
-                            child: Text('Submit'),
+                            child: const Text('Submit'),
                           ),
-                          SizedBox(height: 16),
-                          Row(
+                          const SizedBox(height: 16),
+                          const Row(
                             children: [
                               Expanded(
                                 child: Divider(),
@@ -207,31 +210,31 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               ElevatedButton.icon(
                                 onPressed: () {},
-                                icon: Icon(Icons.account_circle),
-                                label: Text('Google'),
+                                icon: const Icon(Icons.account_circle),
+                                label: const Text('Google'),
                               ),
                               ElevatedButton.icon(
                                 onPressed: () {},
-                                icon: Icon(Icons.account_circle),
-                                label: Text('Apple'),
+                                icon: const Icon(Icons.account_circle),
+                                label: const Text('Apple'),
                               ),
                               ElevatedButton.icon(
                                 onPressed: () {},
-                                icon: Icon(Icons.account_circle),
-                                label: Text('Facebook'),
+                                icon: const Icon(Icons.account_circle),
+                                label: const Text('Facebook'),
                               ),
                             ],
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           TextButton(
                             onPressed: () {},
-                            child: Text(
+                            child: const Text(
                               'Want to know more? Auction rules',
                               style: TextStyle(color: Colors.blue),
                             ),

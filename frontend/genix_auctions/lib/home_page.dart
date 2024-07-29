@@ -11,6 +11,7 @@ import 'package:genix_auctions/core/widgets/gradient_button.dart';
 import 'package:genix_auctions/core/widgets/logo.dart';
 import 'package:genix_auctions/core/widgets/nav_bar.dart';
 import 'package:genix_auctions/core/widgets/auction_panel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,6 +22,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List _products = [];
+  String? username;
   int _currentPage = 1;
   final int _limit = 10;
   bool _isLoading = false;
@@ -29,7 +31,15 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    getLog();
     _fetchProducts();
+  }
+
+  void getLog() async {
+    final pref = await SharedPreferences.getInstance();
+    setState(() {
+      username = pref.getString('username')!;
+    });
   }
 
   Future<void> _fetchProducts() async {
@@ -61,6 +71,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppPallete.white,
       body: Stack(
         children: [
           ListView(
@@ -69,69 +80,75 @@ class _HomePageState extends State<HomePage> {
                 height: 82,
               ),
               Container(
-                height: 700,
+                height: username == null ? 700 : 100,
                 width: double.infinity,
                 color: AppPallete.white,
                 child: Stack(
                   children: [
-                    Positioned(
-                      right: 110,
-                      top: 70,
-                      child: Image.asset(
-                        'assets/background.png',
-                        height: 620,
-                      ),
-                    ),
+                    username == null
+                        ? Positioned(
+                            right: 110,
+                            top: 70,
+                            child: Image.asset(
+                              'assets/background.png',
+                              height: 620,
+                            ),
+                          )
+                        : const SizedBox(),
                     Positioned(
                       left: 200,
                       top: 60,
-                      child: SizedBox(
-                        width: 500,
-                        height: 500,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Your Gateway \nto Extraordinary Finds',
-                              style: TextStyle(
-                                fontSize: 62,
-                                fontWeight: FontWeight.w100,
-                                height: 0,
+                      child: username == null
+                          ? SizedBox(
+                              width: 500,
+                              height: 500,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Your Gateway \nto Extraordinary Finds',
+                                    style: TextStyle(
+                                      fontSize: 62,
+                                      fontWeight: FontWeight.w100,
+                                      height: 0,
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Unlock deals, bid smart, and seize the moment with our online bidding bonanza!',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w100,
+                                    ),
+                                  ),
+                                  Spaces.vspace40,
+                                  GradientButton(
+                                    text: 'Watch Video',
+                                    ontap: () {},
+                                    radius: 25,
+                                  ),
+                                ],
                               ),
-                            ),
-                            const Text(
-                              'Unlock deals, bid smart, and seize the moment with our online bidding bonanza!',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w100,
-                              ),
-                            ),
-                            Spaces.vspace40,
-                            GradientButton(
-                              text: 'Watch Video',
-                              ontap: () {},
-                              radius: 25,
-                            ),
-                          ],
-                        ),
-                      ),
+                            )
+                          : const SizedBox(),
                     ),
                     Positioned(
                       left: 200,
                       bottom: 20,
                       child: RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Explore ',
-                              style: TextStyle(
+                              text: username == null ? 'Explore ' : 'Welcome ',
+                              style: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
                             TextSpan(
-                              text: 'Auctions',
-                              style: TextStyle(
+                              text: username == null
+                                  ? 'Auctions'
+                                  : username!.toUpperCase(),
+                              style: const TextStyle(
                                 color: AppPallete.blueText,
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
@@ -159,19 +176,14 @@ class _HomePageState extends State<HomePage> {
                             product: AuctionModel(
                                 id: product['_id'],
                                 title: product['title'],
-                                description: 'description',
+                                description: product['description'],
                                 minimumBidPrice: product['minimumBidPrice'],
-                                endDate: "135",
-                                currentBidPrice: 1321,
+                                endDate: product['bidEndingTime'],
+                                currentBidPrice: product['currentBidPrice'],
                                 imageUrl: product['imageUrl'],
-                                reviews: null ?? ['']),
-                            time: 681651,
+                                reviews: null ?? []),
+                            time: product['bidEndingTime'],
                           );
-                          // ListTile(
-                          //   title: Text(product['title'] ?? " ..."),
-                          //   subtitle: Text(product['description'] ?? "...."),
-                          //   leading: Image.network(product['image'] ?? "....."),
-                          // );
                         }).toList(),
                       ),
                       if (_hasMore)
